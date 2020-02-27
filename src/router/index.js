@@ -7,7 +7,7 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: '/dashboard'
+            redirect: '/compliance/1'
         },
         {
             path: '/',
@@ -15,14 +15,19 @@ export default new Router({
             meta: { title: '自述文件' },
             children: [
                 {
-                    path: '/dashboard',
+                    path: '/compliance/:type',
                     component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/Dashboard.vue'),
-                    meta: { title: '系统首页' }
+                    meta: { title: '创意大赛' }
                 },
                 {
                     path: '/table',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/BaseTable.vue'),
                     meta: { title: '基础表格' }
+                },
+                {
+                    path: '/create/:type',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/create.vue'),
+                    meta: { title: '创建' }
                 },
                 {
                     path: '/404',

@@ -57,15 +57,30 @@ export default {
             collapse: false,
             items: [
                 {
-                    icon: 'el-icon-lx-home',
-                    index: 'dashboard',
-                    title: '系统首页'
+                    icon: 'el-icon-thumb',
+                    index: '/compliance/1',
+                    title: '合规代言人'
                 },
                 {
-                    icon: 'el-icon-lx-cascades',
-                    index: 'table',
-                    title: '基础表格'
+                    icon: 'el-icon-thumb',
+                    index: '/compliance/2',
+                    title: '群雄争霸'
+                },
+                {
+                    icon: 'el-icon-thumb',
+                    index: '/compliance/3',
+                    title: '人中豪杰'
+                },
+                {
+                    icon: 'el-icon-thumb',
+                    index: '/compliance/4',
+                    title: '精彩回顾'
                 }
+                // {
+                //     icon: 'el-icon-thumb',
+                //     index: '/table',
+                //     title: '基础表格'
+                // }
                 // {
                 //     icon: 'el-icon-rank',
                 //     index: '6',
