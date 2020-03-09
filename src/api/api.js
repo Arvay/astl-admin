@@ -5,5 +5,6 @@ export var Api = {
     getUserInfo: `${host}userinfo/get/`, // 获取用户信息
     uploadFile: `${host}upload/file`, // 附件上传
     activitySave: `${host}activity/save`, // 创建活动
-    getActivityList: `${host}activity/list/` // 获取活动列表
+    getActivityList: `${host}activity/list/`, // 获取活动列表
+    delete: `${host}activity/delete/` // 删除活动
 }

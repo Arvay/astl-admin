@@ -58,6 +58,11 @@ export default {
             items: [
                 {
                     icon: 'el-icon-thumb',
+                    index: '/compliance/5',
+                    title: '合规锦囊'
+                },
+                {
+                    icon: 'el-icon-thumb',
                     index: '/compliance/1',
                     title: '合规代言人'
                 },
@@ -75,6 +80,16 @@ export default {
                     icon: 'el-icon-thumb',
                     index: '/compliance/4',
                     title: '精彩回顾'
+                },
+                {
+                    icon: 'el-icon-thumb',
+                    index: '/compliance/6',
+                    title: '承诺书'
+                },
+                {
+                    icon: 'el-icon-thumb',
+                    index: '/compliance/7',
+                    title: '合规云课堂'
                 }
                 // {
                 //     icon: 'el-icon-thumb',

@@ -2,7 +2,7 @@
     <div class="dashboard_box">
         <HeaderBack :title='menuType | titleList'/>
         <div style="margin-top: 10px">
-            <div>
+            <div v-show="menuType!=='6'">
                 <el-button @click="goCreate" style="float: right;margin: 10px 0px 10px 0" type="primary">创建</el-button>
             </div>
             <el-table
@@ -18,7 +18,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        v-if="menuType!=='1' && menuType!=='4'"
+                        v-if="menuType!=='1' && menuType!=='7' && menuType!=='4' && menuType!=='5'"
                         label="姓名">
                     <template slot-scope="scope">
                         <p>{{scope.row.name}}</p>
@@ -26,8 +26,16 @@
                 </el-table-column>
 
                 <el-table-column
-                        v-if="menuType === '3'"
+                        v-if="menuType === '3' || menuType === '5'"
                         label="标题">
+                    <template slot-scope="scope">
+                        <p>{{scope.row.title}}</p>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                        v-if="menuType === '5'"
+                        label="文章地址">
                     <template slot-scope="scope">
                         <p>{{scope.row.title}}</p>
                     </template>
@@ -42,7 +50,7 @@
                 </el-table-column>
 
                 <el-table-column
-                        v-if="menuType==='1'"
+                        v-if="menuType==='1'||menuType==='7'"
                         label="视频">
                     <template slot-scope="scope">
                         <span @click="setVideo(scope.row.title)" style="cursor: pointer">查看</span>
@@ -50,23 +58,20 @@
                 </el-table-column>
 
                 <el-table-column
-                        v-if="menuType === '1' || menuType === '3'"
+                        v-if="menuType === '1' || menuType === '3' || menuType==='7'"
                         label="介绍">
                     <template slot-scope="scope">
                         <p>{{scope.row.content}}</p>
                     </template>
                 </el-table-column>
-<!--                <el-table-column label="操作">-->
-<!--                    <template slot-scope="scope">-->
-<!--                        <el-button-->
-<!--                                size="mini"-->
-<!--                                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>-->
-<!--                        <el-button-->
-<!--                                size="mini"-->
-<!--                                type="danger"-->
-<!--                                @click="handleDelete(scope.$index, scope.row)">删除</el-button>-->
-<!--                    </template>-->
-<!--                </el-table-column>-->
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button
+                                size="mini"
+                                type="danger"
+                                @click="handleDelete(scope.row.id)">删除</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
         </div>
         <div>
@@ -108,6 +113,12 @@
                         return '人中豪杰资源管理'
                     case '4':
                         return '精彩回顾资源管理'
+                    case '5':
+                        return '合规锦囊资源管理'
+                    case '6':
+                        return '承诺书查看'
+                    case '7':
+                        return '合规云课堂资源管理'
                     default:
                         return '您输入的地址错误，此模块功能还未开发'
                 }
@@ -144,6 +155,13 @@
             this.getList()
         },
         methods: {
+            handleDelete(id) {
+                http.get(Api.delete + id).then(res => {
+                    if (res.code === 0) {
+                        this.getList()
+                    }
+                })
+            },
             setVideo(url) {
                window.open(url)
             },
@@ -174,9 +192,18 @@
                     case '4':
                         this.listType = 4
                         break
+                    case '5':
+                        this.listType = 5
+                        break
+                    case '6':
+                        this.listType = 6
+                        break
+                    case '7':
+                        this.listType = 7
                 }
             },
             getList() {
+                console.log(this.listType, 'ddd');
                 http.get(Api.getActivityList + this.listType).then(res => {
                     this.tableData = res.data
                 })

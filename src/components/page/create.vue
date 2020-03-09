@@ -4,9 +4,21 @@
         <div class="create_content">
             <div class="form_box">
                 <el-form ref="form" :model="form" label-width="80px">
-                    <div v-show="createType==='3'">
+                    <div v-show="createType==='3'||createType==='5'">
                         <el-form-item label="标题">
                             <el-input v-model="form.title" placeholder="请输入标题"></el-input>
+                        </el-form-item>
+                    </div>
+
+                    <div v-show="createType==='5'">
+                        <el-form-item label="文章连接">
+                            <el-input v-model="form.name" placeholder="请输入文章连接"></el-input>
+                        </el-form-item>
+                    </div>
+
+                    <div v-show="createType==='5'">
+                        <el-form-item label="锦囊日期">
+                            <el-input v-model="form.content" placeholder="请输入日期，例：2020年2月15日"></el-input>
                         </el-form-item>
                     </div>
 
@@ -16,7 +28,7 @@
                         </el-form-item>
                     </div>
 
-                    <div v-show="createType<4" class="avatar-uploader_box">
+                    <div v-show="createType<4 || createType==='5' || createType==='7'" class="avatar-uploader_box">
                         <el-form-item label="封面图">
                             <el-upload
                                     class="avatar-uploader"
@@ -43,12 +55,12 @@
                                     :on-exceed="handleExceed"
                                     list-type="picture">
                                 <el-button size="small" type="primary">点击上传</el-button>
-                                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                                <div slot="tip" class="el-upload__tip">只能上传jpg/png/gig文件，且不超过10M,一次最多可选10张上传</div>
                             </el-upload>
                         </el-form-item>
                     </div>
 
-                    <div v-show="createType==='1'">
+                    <div v-show="createType==='1'||createType==='7'">
                         <el-form-item label="视频">
                             <div class="video_box">
                                 <el-upload
@@ -69,7 +81,7 @@
                         </el-form-item>
                     </div>
 
-                    <div v-show="createType==='1' || createType==='3'">
+                    <div v-show="createType==='1' || createType==='7' || createType==='3'">
                         <el-form-item label="介绍">
                             <el-input
                                     type="textarea"
@@ -112,6 +124,10 @@
                     return '创建人中豪杰资源'
                 case '4':
                     return '创建精彩回顾资源'
+                case '5':
+                    return '创建合规锦囊资源'
+                case '7':
+                    return '创建合规云课堂'
                 default:
                     return '您输入的地址错误，此模块功能还未开发'
             }
@@ -152,6 +168,11 @@
                   case '4':
                       this.listType = 4
                       break
+                  case '5':
+                      this.listType = 5
+                  case '7':
+                      this.listType = 7
+                      break
               }
           },
           fileSuccess(response, file, fileList) {
@@ -182,7 +203,7 @@
 
               let isLt2M = file.size / 1024 / 1024 < 6;
               if (this.createType === '1') {
-                  isLt2M = file.size / 1024 / 1024 < 100;
+                  isLt2M = file.size / 1024 / 1024 < 600;
               }
 
               if (this.createType !== '1' && !isJPG) {
