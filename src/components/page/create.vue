@@ -155,6 +155,7 @@
       },
       methods: {
           getListType() {
+              console.log(this.createType, '000000');
               switch (this.createType) {
                   case '1':
                       this.listType = 3
@@ -170,6 +171,7 @@
                       break
                   case '5':
                       this.listType = 5
+                      break
                   case '7':
                       this.listType = 7
                       break
