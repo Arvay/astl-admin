@@ -25,7 +25,7 @@ export default new Router({
                     meta: { title: '基础表格' }
                 },
                 {
-                    path: '/create/:type',
+                    path: '/create/:type/:id?',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/create.vue'),
                     meta: { title: '创建' }
                 },

@@ -4,7 +4,7 @@
         <div class="create_content">
             <div class="form_box">
                 <el-form ref="form" :model="form" label-width="80px">
-                    <div v-show="createType==='3'||createType==='5'">
+                    <div v-show="createType==='2'||createType==='3'||createType==='5'">
                         <el-form-item label="标题">
                             <el-input v-model="form.title" placeholder="请输入标题"></el-input>
                         </el-form-item>
@@ -36,7 +36,7 @@
                                     :show-file-list="false"
                                     :on-success="handleAvatarSuccess"
                                     :before-upload="beforeAvatarUpload">
-                                <img v-if="form.imageUrl" :src="form.imageUrl" class="avatar">
+                                <img v-if="imgurl" :src="imgurl" class="avatar">
                                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                             </el-upload>
                         </el-form-item>
@@ -60,7 +60,7 @@
                         </el-form-item>
                     </div>
 
-                    <div v-show="createType==='1'||createType==='7'">
+                    <div v-show="createType==='1' || createType==='3' ||createType==='7'">
                         <el-form-item label="视频">
                             <div class="video_box">
                                 <el-upload
@@ -81,11 +81,11 @@
                         </el-form-item>
                     </div>
 
-                    <div v-show="createType==='1' || createType==='7' || createType==='3'">
+                    <div v-show="createType==='1' || createType==='2' || createType==='7' || createType==='3'">
                         <el-form-item label="介绍">
                             <el-input
                                     type="textarea"
-                                    :rows="4"
+                                    :rows="12"
                                     placeholder="请输入内容"
                                     v-model="form.content">
                             </el-input>
@@ -93,8 +93,9 @@
                     </div>
 
                     <el-form-item>
-                        <el-button type="primary" @click="onSubmit">立即创建</el-button>
-                        <el-button>取消</el-button>
+                        <el-button v-show="!activityId" type="primary" @click="onSubmit">立即创建</el-button>
+                        <el-button v-show="activityId" type="primary" @click="updateActivity">保存编辑</el-button>
+                        <el-button @click="$router.back()">取消</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -114,6 +115,12 @@
         }
       },
     filters: {
+        namedddd (item) {
+            if (item) {
+                item = item.split('$分割$')[0]
+            }
+            return item
+        },
         titleList (type) {
             switch (type) {
                 case '1':
@@ -135,6 +142,9 @@
     },
       data() {
         return {
+            mp4url: '',
+            imgurl: '',
+            activityId: this.$route.params.id,
             listType: 0,
             fileVideoList: [],
             filesLength: this.$route.params.type === '1' ? 1 : 10,
@@ -152,10 +162,20 @@
       },
       created: function () {
           this.getListType()
+          if (this.activityId) {
+              this.getActivityInfo()
+          }
       },
       methods: {
+          getActivityInfo () {
+              http.get(Api.activityInfo + this.activityId).then(res => {
+                  res.data.name = res.data.name.split('$分割$')[0]
+                  this.form = res.data
+                  this.form.imageUrl = res.data.image
+                  this.imgurl = res.data.image
+              })
+          },
           getListType() {
-              console.log(this.createType, '000000');
               switch (this.createType) {
                   case '1':
                       this.listType = 3
@@ -178,8 +198,11 @@
               }
           },
           fileSuccess(response, file, fileList) {
-              if (this.createType === '1') {
+              if (this.createType === '1' || this.createType === '7') {
                   this.form.title = response.data
+              }
+              if (this.createType === '3') {
+                  this.mp4url = response.data
               }
           },
           handleRemove(file, fileList) {
@@ -195,6 +218,7 @@
               return this.$confirm(`确定移除 ${ file.name }？`);
           },
           handleAvatarSuccess(res, file) {
+              this.imgurl = res.data
               this.form.imageUrl = res.data;
           },
           handleAvatarSuccess2(res, file, list) {
@@ -220,6 +244,33 @@
               }
               return isJPG && isLt2M;
           },
+          updateActivity() {
+              let params = {
+                  id: this.activityId,
+                  type: this.listType,
+                  title: this.form.title,
+                  name: this.form.name,
+                  image: this.form.imageUrl,
+                  content: this.form.content,
+                  contenttype: 1
+              }
+              if (this.createType === '4') {
+                  params.image = this.imgList.toString()
+              }
+              if (this.createType === '3') {
+                  if (this.mp4url !== '') {
+                      params.name = params.name + '$分割$' + this.mp4url
+                  }
+              }
+              http.post(Api.updateActivity, params).then(res => {
+                  if (res.code === 0) {
+                      this.$message.success('编辑成功');
+                      this.$router.back()
+                  }
+              }).catch(error => {
+                  alert(error.message)
+              })
+          },
           onSubmit() {
               // type 1.群雄争霸2.人中豪杰3.合规代言人
               // contenttype 1.文章2.图片3.视频
@@ -234,9 +285,12 @@
               if (this.createType === '4') {
                   params.image = this.imgList.toString()
               }
+              if (this.createType === '3') {
+                  params.name = params.name + '$分割$' + this.mp4url
+              }
               http.post(Api.activitySave, params).then(res => {
-                  console.log(res);
                   if (res.code === 0) {
+                      this.$message.success('创建成功');
                       this.$router.back()
                   }
               }).catch(error => {

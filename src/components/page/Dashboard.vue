@@ -2,10 +2,40 @@
     <div class="dashboard_box">
         <HeaderBack :title='menuType | titleList'/>
         <div style="margin-top: 10px">
-            <div v-show="menuType!=='6'">
+            <div v-show="menuType!=='6'&&menuType!=='8'">
                 <el-button @click="goCreate" style="float: right;margin: 10px 0px 10px 0" type="primary">创建</el-button>
             </div>
             <el-table
+                    v-show="menuType==='8'"
+                    :data="watchData"
+                    style="width: 100%">
+                <el-table-column
+                        label="序号">
+                    <template slot-scope="scope">
+                        <p>{{scope.$index + 1}}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="姓名">
+                    <template slot-scope="scope">
+                        <p>{{scope.row.name}}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="邮箱">
+                    <template slot-scope="scope">
+                        <p>{{scope.row.userid}}</p>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="转发&分享次数">
+                    <template slot-scope="scope">
+                        <p>{{scope.row.count}}</p>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-table
+                    v-show="menuType!=='8'"
                     :data="tableData"
                     :border="true"
                     :show-overflow-tooltip="true"
@@ -21,12 +51,12 @@
                         v-if="menuType!=='1' && menuType!=='7' && menuType!=='4' && menuType!=='5'"
                         label="姓名">
                     <template slot-scope="scope">
-                        <p>{{scope.row.name}}</p>
+                        <p>{{scope.row.name | namedddd}}</p>
                     </template>
                 </el-table-column>
 
                 <el-table-column
-                        v-if="menuType === '3' || menuType === '5'"
+                        v-if="menuType === '2' || menuType === '3' || menuType === '5'"
                         label="标题">
                     <template slot-scope="scope">
                         <p>{{scope.row.title}}</p>
@@ -58,7 +88,8 @@
                 </el-table-column>
 
                 <el-table-column
-                        v-if="menuType === '1' || menuType === '3' || menuType==='7'"
+                        :show-overflow-tooltip="true"
+                        v-if="menuType === '1' || menuType === '2' || menuType === '3' || menuType==='7'"
                         label="介绍">
                     <template slot-scope="scope">
                         <p>{{scope.row.content}}</p>
@@ -66,6 +97,10 @@
                 </el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
+                        <el-button
+                                v-show="menuType!=='6'&&menuType!=='4'"
+                                size="mini"
+                                @click="update(scope.row.id)">编辑</el-button>
                         <el-button
                                 size="mini"
                                 type="danger"
@@ -103,6 +138,12 @@
     export default {
         name: 'dashboard',
         filters: {
+            namedddd (item) {
+                if (item) {
+                    item = item.split('$分割$')[0]
+                }
+                return item
+            },
             titleList (type) {
                 switch (type) {
                     case '1':
@@ -119,6 +160,8 @@
                         return '承诺书查看'
                     case '7':
                         return '合规云课堂资源管理'
+                    case '8':
+                        return '转发&分享统计'
                     default:
                         return '您输入的地址错误，此模块功能还未开发'
                 }
@@ -126,19 +169,25 @@
         },
         data() {
             return {
+                watchData: [],
                 imgList: [],
                 imgUrl: '',
                 dialogVisible: false,
                 menuType: this.$route.params.type,
                 listType: 0,
+                tableData2: [],
                 tableData: []
             };
         },
         watch: {
             '$route' (to, from) {
                 this.menuType = this.$route.params.type
-                this.getListType()
-                this.getList()
+                if (this.menuType !== '8') {
+                    this.getListType()
+                    this.getList()
+                } else {
+                    this.watchList()
+                }
             }
         },
         components: {
@@ -151,10 +200,22 @@
             }
         },
         created() {
-            this.getListType()
-            this.getList()
+            if (this.menuType !== '8') {
+                this.getListType()
+                this.getList()
+            } else {
+                this.watchList()
+            }
         },
         methods: {
+            watchList() {
+              http.get(Api.watchList).then(res => {
+                  this.watchData = res.data
+              })
+            },
+            update(id) {
+                this.$router.push({path: `/create/${this.menuType}/${id}`})
+            },
             handleDelete(id) {
                 http.get(Api.delete + id).then(res => {
                     if (res.code === 0) {
@@ -178,7 +239,6 @@
                 this.imgList = []
             },
             getListType() {
-                console.log(this.menuType)
                 switch (this.menuType) {
                     case '1':
                         this.listType = 3
@@ -203,7 +263,6 @@
                 }
             },
             getList() {
-                console.log(this.listType, 'ddd');
                 http.get(Api.getActivityList + this.listType).then(res => {
                     this.tableData = res.data
                 })

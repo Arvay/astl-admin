@@ -90,6 +90,11 @@ export default {
                     icon: 'el-icon-thumb',
                     index: '/compliance/7',
                     title: '合规云课堂'
+                },
+                {
+                    icon: 'el-icon-thumb',
+                    index: '/compliance/8',
+                    title: '转发&分享'
                 }
                 // {
                 //     icon: 'el-icon-thumb',
